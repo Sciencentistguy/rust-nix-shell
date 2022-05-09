@@ -70,11 +70,15 @@ fn parse_channel_str(channel: &str) -> Option<RustChannel> {
     }
 }
 
+/// A nix-based alternative to `rustup`
 #[derive(Parser, Debug)]
 struct Opt {
+    /// The rust release channel to pull. Possible values: ["stable", "beta", "nightly",
+    /// "nightly-YYYY-mm-dd", "1.x.y"]
     #[clap(default_value = "stable")]
     channel: String,
 
+    /// The shell to open. Passed to `nix-shell --command`
     #[clap(long, default_value = "zsh")]
     shell: String,
 }
