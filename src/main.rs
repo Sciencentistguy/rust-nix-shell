@@ -24,7 +24,7 @@ fn open_shell(channel: RustChannel, shell: &str) {
     cmd.arg(shell);
     cmd.arg("-E");
 
-    let prg = format!(
+    let expression = format!(
         "({}) {}",
         include_str!("generic-rust.nix"),
         match channel {
@@ -33,12 +33,11 @@ fn open_shell(channel: RustChannel, shell: &str) {
             RustChannel::Nightly => r#"{channel = "nightly";}"#.to_owned(),
             RustChannel::DatedNightly(date) =>
                 format!(r#"{{channel = "nightly"; date = "{date}";}}"#),
-            RustChannel::Version(version) => format!(r#""{{channel = "{version}";}}"#),
+            RustChannel::Version(version) => format!(r#"{{channel = "{version}";}}"#),
         }
     );
-    println!("{}", prg);
-    cmd.arg(prg);
 
+    cmd.arg(expression);
     cmd.status().unwrap();
 }
 
