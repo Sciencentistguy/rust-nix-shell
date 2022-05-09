@@ -1,20 +1,11 @@
-use std::process::{self, Command};
+use std::process::Command;
 
 use clap::Parser;
 use regex::Regex;
 
 fn main() {
     let args = Opt::parse();
-
-    let channel = &args.channel;
-    let channel = match parse_channel_str(channel) {
-        Some(x) => x,
-        None => {
-            eprintln!("Invalid version specified: {channel}");
-            process::exit(1);
-        }
-    };
-    open_shell(channel, &args.shell);
+    open_shell(args.channel, &args.shell);
 }
 
 fn open_shell(channel: RustChannel, shell: &str) {
@@ -50,21 +41,26 @@ enum RustChannel {
     Version(String),
 }
 
-fn parse_channel_str(channel: &str) -> Option<RustChannel> {
+fn parse_channel_str(channel: &str) -> Result<RustChannel, &'static str> {
     match channel {
-        "stable" => Some(RustChannel::Stable),
-        "beta" => Some(RustChannel::Beta),
-        "nightly" => Some(RustChannel::Nightly),
+        "stable" => Ok(RustChannel::Stable),
+        "beta" => Ok(RustChannel::Beta),
+        "nightly" => Ok(RustChannel::Nightly),
         _ => {
-            let nightly_pattern = Regex::new(r"^nightly-\d+-\d+-\d+$").unwrap();
+            let nightly_pattern = Regex::new(r"^nightly-\d{4}-\d{2}-\d{2}$").unwrap();
             let version_pattern = Regex::new(r"^1\.\d+(?:\.\d+)?$").unwrap();
 
             if nightly_pattern.is_match(channel) {
-                Some(RustChannel::DatedNightly(channel[8..].to_owned()))
+                Ok(RustChannel::DatedNightly(channel[8..].to_owned()))
             } else if version_pattern.is_match(channel) {
-                Some(RustChannel::Version(channel.to_owned()))
+                Ok(RustChannel::Version(channel.to_owned()))
             } else {
-                None
+                Err("Invalid channel. Channel must be one of:
+        - 'stable'
+        - 'beta'
+        - 'nightly'
+        - A specific nightly: 'nightly-YYYY-mm-dd'
+        - A rust tagged release, e.g. '1.60' or '1.58.1'")
             }
         }
     }
@@ -75,8 +71,8 @@ fn parse_channel_str(channel: &str) -> Option<RustChannel> {
 struct Opt {
     /// The rust release channel to pull. Possible values: ["stable", "beta", "nightly",
     /// "nightly-YYYY-mm-dd", "1.x.y"]
-    #[clap(default_value = "stable")]
-    channel: String,
+    #[clap(default_value = "stable", parse(try_from_str = parse_channel_str))]
+    channel: RustChannel,
 
     /// The shell to open. Passed to `nix-shell --command`
     #[clap(long, default_value = "zsh")]
@@ -93,7 +89,8 @@ mod tests {
             parse_channel_str("nightly-2022-01-01").unwrap(),
             RustChannel::DatedNightly("2022-01-01".to_string())
         );
-        assert_eq!(parse_channel_str("nightly-01/01/2022"), None);
+        assert!(parse_channel_str("nightly-01/01/2022").is_err());
+        assert!(parse_channel_str("nightly-2022-1-1").is_err());
     }
     #[test]
     fn test_parsing_version() {
@@ -105,6 +102,15 @@ mod tests {
             parse_channel_str("1.58.1").unwrap(),
             RustChannel::Version("1.58.1".to_string())
         );
-        assert_eq!(parse_channel_str("1.58.1.5"), None);
+        assert!(parse_channel_str("1.58.1.5").is_err());
+    }
+
+    #[test]
+    fn test_parsing_strings() {
+        assert_eq!(parse_channel_str("stable").unwrap(), RustChannel::Stable);
+        assert_eq!(parse_channel_str("beta").unwrap(), RustChannel::Beta);
+        assert_eq!(parse_channel_str("nightly").unwrap(), RustChannel::Nightly);
+        assert!(parse_channel_str("nightly-").is_err());
+        assert!(parse_channel_str("something else").is_err());
     }
 }
