@@ -1,14 +1,15 @@
-toolchainAttrs: let
+{toolchainAttrs, otherDeps}: let
   generic-rust-shell = {
     cargo,
     cargo-edit,
     clippy,
     mkShell,
+    openssl,
     pkg-config,
+    rust-src,
     rustPlatform,
     rustc,
     rustfmt,
-    rust-src,
   }:
     mkShell {
       name = "generic-rust-shell";
@@ -21,7 +22,7 @@ toolchainAttrs: let
 
         pkg-config
         rustPlatform.bindgenHook
-      ];
+      ] ++ otherDeps;
 
       RUST_SRC_PATH = "${rust-src}";
     };

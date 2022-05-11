@@ -1,6 +1,5 @@
 {
   inputs = {
-    # github example, also supported gitlab:
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     flake-compat = {
@@ -32,6 +31,7 @@
             src = lib.cleanSource ./.;
             cargoLock.lockFile = ./Cargo.lock;
             meta = with lib; {
+              description = "A nix-based alternative to rustup";
               license = licenses.mpl20;
               homepage = "https://github.com/Sciencentistguy/generic-rust-shell";
               platforms = platforms.all;
