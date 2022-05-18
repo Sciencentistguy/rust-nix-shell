@@ -14,8 +14,10 @@ const INVALID_CHANNEL_MSG: &str = "Invalid channel. Channel must be one of:
 fn main() {
     let args = Opt::parse();
     let mut cmd = Command::new("nix-shell");
-    cmd.arg("--show-trace");
-    cmd.arg("-E");
+
+    if args.verbose {
+        cmd.arg("--show-trace");
+    }
 
     if args.pure {
         cmd.arg("--pure");
@@ -43,9 +45,10 @@ fn main() {
     );
 
     if args.verbose {
-        eprintln!("Evaluating nix expression:\n{}", expression);
+        eprintln!("Expression to be evaluated:\n{}", expression);
     }
 
+    cmd.arg("-E");
     cmd.arg(expression);
     cmd.status().unwrap();
 }
@@ -66,15 +69,11 @@ fn parse_channel_str(channel: &str) -> Result<RustChannel, &'static str> {
         "stable" => Ok(RustChannel::Stable),
         "beta" => Ok(RustChannel::Beta),
         "nightly" => Ok(RustChannel::Nightly),
-        _ => {
-            if nightly_pattern.is_match(channel) {
-                Ok(RustChannel::DatedNightly(channel[8..].to_owned()))
-            } else if version_pattern.is_match(channel) {
-                Ok(RustChannel::Version(channel.to_owned()))
-            } else {
-                Err(INVALID_CHANNEL_MSG)
-            }
+        _ if nightly_pattern.is_match(channel) => {
+            Ok(RustChannel::DatedNightly(channel[8..].to_owned()))
         }
+        _ if version_pattern.is_match(channel) => Ok(RustChannel::Version(channel.to_owned())),
+        _ => Err(INVALID_CHANNEL_MSG),
     }
 }
 
@@ -85,7 +84,8 @@ struct Opt {
     /// "nightly-YYYY-mm-dd", "1.x.y"]
     #[clap(default_value = "stable", parse(try_from_str = parse_channel_str))]
     channel: RustChannel,
-    /// The shell to open. Passed to `nix-shell --command`
+
+    /// The shell to open. Passed to 'nix-shell --command'
     #[clap(long, default_value = "zsh")]
     shell: String,
 
