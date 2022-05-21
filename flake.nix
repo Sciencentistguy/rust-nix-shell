@@ -15,31 +15,31 @@
   }:
     {
       overlay = final: prev: {
-        generic-rust-shell = self.packages.${prev.system}.default;
+        rust-nix-shell = self.packages.${prev.system}.default;
       };
     }
     // flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = nixpkgs.legacyPackages.${system};
         inherit (pkgs) lib;
-        generic-rust-shell = {
+        rust-nix-shell = {
           lib,
           rustPlatform,
         }:
           rustPlatform.buildRustPackage {
-            name = "generic-rust-shell";
+            name = "rust-nix-shell";
             src = lib.cleanSource ./.;
             cargoLock.lockFile = ./Cargo.lock;
             meta = with lib; {
               description = "A nix-based alternative to rustup";
               license = licenses.mpl20;
-              homepage = "https://github.com/Sciencentistguy/generic-rust-shell";
+              homepage = "https://github.com/Sciencentistguy/rust-nix-shell";
               platforms = platforms.all;
             };
           };
       in {
-        packages.generic-rust-shell = pkgs.callPackage generic-rust-shell {};
-        packages.default = self.packages.${system}.generic-rust-shell;
+        packages.rust-nix-shell = pkgs.callPackage rust-nix-shell {};
+        packages.default = self.packages.${system}.rust-nix-shell;
 
         devShells.default = self.packages.${system}.default.overrideAttrs (super: {
           nativeBuildInputs = with pkgs;

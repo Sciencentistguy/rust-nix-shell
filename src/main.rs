@@ -32,7 +32,7 @@ fn main() {
             toolchainAttrs = {};
             otherDeps = with import <nixpkgs> {{}}; [{}];
         }}"},
-        include_str!("generic-rust.nix"),
+        include_str!("rust.nix"),
         match args.channel {
             RustChannel::Stable => r#"{channel = "stable";}"#.to_owned(),
             RustChannel::Beta => r#"{channel = "beta";}"#.to_owned(),

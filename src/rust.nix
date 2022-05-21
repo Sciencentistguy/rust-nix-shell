@@ -2,7 +2,7 @@
   toolchainAttrs,
   otherDeps,
 }: let
-  generic-rust-shell = {
+  rust-nix-shell = {
     mkShell,
     toolchain,
     cargo-edit,
@@ -10,7 +10,7 @@
     rustPlatform,
   }:
     mkShell {
-      name = "generic-rust-shell";
+      name = "rust-nix-shell";
       buildInputs =
         [
           (toolchain.withComponents ["cargo" "rustc" "rust-src" "rustfmt" "clippy"])
@@ -27,7 +27,7 @@
   fenix = import (fetchTarball "https://github.com/nix-community/fenix/archive/main.tar.gz") {};
   toolchain = fenix.toolchainOf toolchainAttrs;
 in
-  pkgs.callPackage generic-rust-shell {
+  pkgs.callPackage rust-nix-shell {
     inherit toolchain;
     rustPlatform = pkgs.makeRustPlatform {
       inherit (toolchain) rustc cargo;

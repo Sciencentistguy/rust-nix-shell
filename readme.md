@@ -1,8 +1,8 @@
-# generic-rust-shell
+# rust-nix-shell
 
-Enter a nix-shell environment that has all the tools needed to develop rust code. Defaults to stable, but can also use other channels.
+Have you ever found yourself wanting to work on a rust project on NixOS without having to write a `flake.nix` or a `shell.nix` for that project? You need `rust-nix-shell`, a program halfway between `rustup` and `nix-shell`! No more are the glibc errors that plague `rustup` on NixOS; gone are the horrible `nix-shell -E '...'` incantations to set `RUST_SRC_PATH` properly in an ephemeral shell.
 
-Intended as a nix-based alternative to `rustup`. Rustup on nixos has issues with glibc; this does not.
+`rust-nix-shell` allows you to create a shell environment with any version of rust, à la `rustup`. You can also specify other dependencies with `-p`, à la `nix-shell`.
 
 ## Dependencies
 
@@ -10,9 +10,10 @@ This program shells out to `nix-shell`, finding it from `$PATH`. It also by defa
 
 ## Usage
 
-`generic-rust-shell --help`
+`rust-nix-shell --help`
 
 You can specify the channel as an optional argument. This must be one of:
+
 - `stable`
 - `beta`
 - `nightly`
