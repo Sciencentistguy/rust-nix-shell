@@ -25,6 +25,7 @@
         rust-nix-shell = {
           lib,
           rustPlatform,
+          installShellFiles,
         }:
           rustPlatform.buildRustPackage {
             name = "rust-nix-shell";
@@ -36,6 +37,11 @@
               homepage = "https://github.com/Sciencentistguy/rust-nix-shell";
               platforms = platforms.all;
             };
+            nativeBuildInputs = [installShellFiles];
+            postInstall = ''
+              ls target
+              installShellCompletion --zsh target/completions/_rust_nix_shell
+            '';
           };
       in {
         packages.rust-nix-shell = pkgs.callPackage rust-nix-shell {};
