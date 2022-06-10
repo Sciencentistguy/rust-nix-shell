@@ -1,6 +1,8 @@
 {
   toolchainAttrs,
   otherDeps,
+  fenix,
+  name,
 }: let
   rust-nix-shell = {
     mkShell,
@@ -10,7 +12,7 @@
     rustPlatform,
   }:
     mkShell {
-      name = "rust-nix-shell";
+      inherit name;
       buildInputs =
         [
           (toolchain.withComponents ["cargo" "rustc" "rust-src" "rustfmt" "clippy"])
@@ -24,7 +26,8 @@
       RUST_SRC_PATH = "${toolchain.rust-src}";
     };
   pkgs = import <nixpkgs> {};
-  fenix = import (fetchTarball "https://github.com/nix-community/fenix/archive/main.tar.gz") {};
+  inherit fenix;
+  # fenix = import (fetchTarball "https://github.com/nix-community/fenix/archive/main.tar.gz") {};
   toolchain = fenix.toolchainOf toolchainAttrs;
 in
   pkgs.callPackage rust-nix-shell {
