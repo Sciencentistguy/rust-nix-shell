@@ -50,9 +50,10 @@ fn main() {
             ret.code().unwrap() == 0
         };
 
-        match fenix_in_nix_path {
-            true if !args.fresh_fenix => "<fenix>",
-            _ => r#"fetchTarball "https://github.com/nix-community/fenix/archive/main.tar.gz""#,
+        if fenix_in_nix_path && !args.fresh_fenix {
+            "<fenix>"
+        } else {
+            r#"fetchTarball "https://github.com/nix-community/fenix/archive/main.tar.gz""#
         }
     };
 

@@ -14,6 +14,8 @@ It produces a shell with a complete rust toolchain of the specified version (the
 
 This program shells out to `nix-shell`, finding it from `$PATH`. It also by default calls `zsh` from `$PATH`, but this is configurable
 
+Optionally, if a copy of [fenix](https://github.com/nix-community/fenix) is found at `<fenix>` (in `$NIX_PATH`), it will be used instead of downloading fenix master using `fetchtarball` every time.
+
 ## Installation
 
 This repository is a flake, providing the output `rust-nix-shell`, and contains a `default.nix` for backwards compatibility.
