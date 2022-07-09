@@ -8,8 +8,6 @@ Have you ever found yourself wanting to work on a rust project on NixOS without 
 
 This program is intended for use on NixOS. If your system is not NixOS then I'd recommend using `rustup` instead of this --- unless you **know** that you want a nix-based rust environment, you probably don't.
 
-It produces a shell with a complete rust toolchain of the specified version (the most recent stable, by default). This is useful when you're working on a project that does not have nix development files in the repo, or if they are not compatible with a nix-based rust-analyzer installation.
-
 ## Dependencies
 
 This program shells out to `nix-shell`, finding it from `$PATH`. It also by default calls `zsh` from `$PATH`, but this is configurable
@@ -18,7 +16,7 @@ Optionally, if a copy of [fenix](https://github.com/nix-community/fenix) is foun
 
 ## Installation
 
-This repository is a flake, providing the output `rust-nix-shell`, and contains a `default.nix` for backwards compatibility.
+This repository is a flake, providing the output `rust-nix-shell`.
 
 The recommended way of installing this is by adding it to your system configuration. (For an example, look at my [system flake](https://github.com/Sciencentistguy/nixfiles))
 
@@ -37,7 +35,7 @@ nix profile install 'github:Sciencentistguy/rust-nix-shell'
 For backwards compatibility, a `default.nix` is provided, allowing `rust-nix-shell` to be installed using `nix-env`:
 
 ```sh
-nix-env --dry-run -f 'https://github.com/Sciencentistguy/rust-nix-shell/archive/master.tar.gz' -i rust-nix-shell
+nix-env -f 'https://github.com/Sciencentistguy/rust-nix-shell/archive/master.tar.gz' -i rust-nix-shell
 ```
 
 ## Usage
