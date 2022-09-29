@@ -81,7 +81,7 @@ fn main() {
     cmd.status().unwrap();
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 enum RustChannel {
     Stable,
     Beta,
@@ -110,7 +110,7 @@ fn parse_channel_str(channel: &str) -> Result<RustChannel, &'static str> {
 struct Opt {
     /// The rust release channel to pull. Possible values: ["stable", "beta", "nightly",
     /// "nightly-YYYY-mm-dd", "1.x.y"]
-    #[clap(default_value = "stable", parse(try_from_str = parse_channel_str))]
+    #[clap(default_value = "stable", value_parser(parse_channel_str))]
     channel: RustChannel,
 
     /// The shell to open. Passed to 'nix-shell --command'
@@ -118,7 +118,7 @@ struct Opt {
     shell: String,
 
     /// Extra packages to insert in the shell, as if passed to 'nix-shell -p'
-    #[clap(short, long, multiple_values(true))]
+    #[clap(short, long, num_args(1..))]
     packages: Vec<String>,
 
     /// Use a pure nix shell. Overrides '--shell'
