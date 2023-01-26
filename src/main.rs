@@ -1,5 +1,6 @@
 use std::process::{Command, Stdio};
 
+use bat::PrettyPrinter;
 use clap::Parser;
 use indoc::indoc;
 use regex::Regex;
@@ -10,6 +11,8 @@ const INVALID_CHANNEL_MSG: &str = "Invalid channel. Channel must be one of:
         - 'nightly'
         - A specific nightly: 'nightly-YYYY-mm-dd'
         - A rust tagged release, e.g. '1.60' or '1.58.1'";
+
+const FENIX_URL: &str = "https://github.com/nix-community/fenix/archive/main.tar.gz";
 
 fn main() {
     let args = Opt::parse();
@@ -51,9 +54,9 @@ fn main() {
         };
 
         if fenix_in_nix_path && !args.fresh_fenix {
-            "<fenix>"
+            "<fenix>".to_owned()
         } else {
-            r#"fetchTarball "https://github.com/nix-community/fenix/archive/main.tar.gz""#
+            format!("fetchTarball \"{}\"", FENIX_URL)
         }
     };
 
@@ -73,7 +76,11 @@ fn main() {
     );
 
     if args.verbose {
-        eprintln!("Expression to be evaluated:\n{}", expression);
+        PrettyPrinter::new()
+            .input_from_bytes(expression.as_bytes())
+            .language("nix")
+            .print()
+            .unwrap();
     }
 
     cmd.arg("-E");
