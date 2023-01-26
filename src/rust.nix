@@ -34,6 +34,7 @@ in
   pkgs.callPackage rust-nix-shell {
     inherit toolchain;
     rustPlatform = pkgs.makeRustPlatform {
-      inherit (toolchain) rustc cargo;
+      inherit (toolchain) cargo;
+      rustc = toolchain.rustc // {inherit (pkgs) llvmPackages;};
     };
   }
