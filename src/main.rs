@@ -150,31 +150,31 @@ mod tests {
     #[test]
     fn test_parsing_nightly() {
         assert_eq!(
-            parse_channel_str("nightly-2022-01-01"),
+            RustChannel::from_str("nightly-2022-01-01"),
             Ok(RustChannel::DatedNightly("2022-01-01".to_string()))
         );
-        assert!(parse_channel_str("nightly-01/01/2022").is_err());
-        assert!(parse_channel_str("nightly-2022-1-1").is_err());
+        assert!(RustChannel::from_str("nightly-01/01/2022").is_err());
+        assert!(RustChannel::from_str("nightly-2022-1-1").is_err());
     }
     #[test]
     fn test_parsing_version() {
         assert_eq!(
-            parse_channel_str("1.59"),
+            RustChannel::from_str("1.59"),
             Ok(RustChannel::Version("1.59".to_string()))
         );
         assert_eq!(
-            parse_channel_str("1.58.1"),
+            RustChannel::from_str("1.58.1"),
             Ok(RustChannel::Version("1.58.1".to_string()))
         );
-        assert!(parse_channel_str("1.58.1.5").is_err());
+        assert!(RustChannel::from_str("1.58.1.5").is_err());
     }
 
     #[test]
     fn test_parsing_strings() {
-        assert_eq!(parse_channel_str("stable"), Ok(RustChannel::Stable));
-        assert_eq!(parse_channel_str("beta"), Ok(RustChannel::Beta));
-        assert_eq!(parse_channel_str("nightly"), Ok(RustChannel::Nightly));
-        assert!(parse_channel_str("nightly-").is_err());
-        assert!(parse_channel_str("something else").is_err());
+        assert_eq!(RustChannel::from_str("stable"), Ok(RustChannel::Stable));
+        assert_eq!(RustChannel::from_str("beta"), Ok(RustChannel::Beta));
+        assert_eq!(RustChannel::from_str("nightly"), Ok(RustChannel::Nightly));
+        assert!(RustChannel::from_str("nightly-").is_err());
+        assert!(RustChannel::from_str("something else").is_err());
     }
 }
